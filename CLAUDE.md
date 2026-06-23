@@ -38,21 +38,19 @@ This project enforces a disciplined Git workflow:
 - Commit message body must end with `Co-Authored-By: Claude <noreply@anthropic.com>`.
 - Never leave uncommitted changes in the working tree.
 
-### Rule 2: Squash before push
+### Rule 2: Push after every commit
 
-- Before pushing to `origin`, squash ALL local commits that are ahead of the
-  remote tracking branch into a **single** commit.
-- "Ahead commits" = all commits between `<remote>/<branch>` and `HEAD` (inclusive
-  of local, exclusive of remote).
-- Use interactive rebase to squash:
-  ```bash
-  git rebase -i <remote>/<branch>
-  # Mark all but the first commit as `squash` / `s`
-  ```
-- Reword the squashed commit message to summarize the combined changes cleanly.
-- Push the single squashed commit with `git push`.
-- If the remote branch does not yet exist, squash all commits on the current
-  branch from `root` into one before `git push -u origin <branch>`.
+- After **each** local commit, immediately push to `origin`.
+- This ensures the remote is always in sync with local — no batch accumulation.
+- Since you push after every commit, there is never more than 1 ahead-of-remote
+  commit at push time.
+
+### Rule 3: Squash before push (safety net)
+
+- If multiple local commits happen to accumulate ahead of `<remote>/<branch>`
+  (e.g., due to network issues), squash them into a **single** commit before pushing.
+- Use `git reset --soft <remote>/<branch>` then `git commit` a consolidated message.
+- If the remote branch does not yet exist, squash from root before `git push -u`.
 
 ## Conventions
 
